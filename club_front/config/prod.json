@@ -1,0 +1,9 @@
+{
+  "BASE_URL": "https://clubs.holootech.ir/api/v1",
+  "REDIRECT": "https://clubs.holootech.ir/",
+  "BACKEND_URL": "https://clubs.holootech.ir/api/v1",
+  "URL": "https://clubs.holootech.ir/",
+  "NODE_URL":"https://clubs.holootech.ir/"
+}
+
+

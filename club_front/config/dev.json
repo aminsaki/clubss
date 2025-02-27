@@ -1,0 +1,12 @@
+{
+  "BASE_URL": "http://localhost:8000/api/v1",
+  "REDIRECT": "https://holooacademy.com/",
+  "BACKEND_URL": "http://localhost:8000/api/v1",
+  "URL": "https://exam.holooacademy.com",
+  "PUBLIC_URL":"https://exam.holooacademy.com/Azmoon/backend/public/images",
+  "NODE_URL":"https://localhost:3000/"
+
+}
+
+
+
