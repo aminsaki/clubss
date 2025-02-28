@@ -1,0 +1,39 @@
+POST http://localhost:8000/api/v1/invoices/getSeries
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 14
+User-Agent: IntelliJ HTTP Client/PhpStorm 2024.3.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+series=1276405
+
+<> 2025-02-28T051505.500.html
+
+###
+
+POST http://localhost:8000/api/v1/invoices/getSeries
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 14
+User-Agent: IntelliJ HTTP Client/PhpStorm 2024.3.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+series=1276405
+
+<> 2025-02-28T051501.500.html
+
+###
+
+POST http://localhost:8000/api/v1/invoices/getSeries
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 14
+User-Agent: IntelliJ HTTP Client/PhpStorm 2024.3.2.1
+Accept-Encoding: br, deflate, gzip, x-gzip
+Accept: */*
+
+series=1276405
+
+<> 2025-02-28T051436.500.html
+
+###
+

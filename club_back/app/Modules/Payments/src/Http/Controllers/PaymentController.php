@@ -4,8 +4,8 @@ namespace holoo\modules\Payments\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Payments\src\services\HolooSubscription;
-use App\Modules\Smss\src\Jobs\SendSmsPaymentJob;
 use holoo\modules\Bases\Helper\Responses;
+use holoo\modules\Bases\Jobs\SendSmsJob;
 use holoo\modules\Bases\servers\bank\PaymentGatewayInterface;
 use holoo\modules\Payments\Models\Payment;
 use Illuminate\Http\Request;
@@ -44,27 +44,24 @@ class PaymentController extends Controller
             return redirect()->to(config('app.web_url') . 'UNKNOWN');
         }
         $result = $this->gateway->verify($request->all());
-        if (!empty($result) && $result !== false ) {
-            $this->holooSubscription->confirmRenewal([
-                'username'=>$payment->mobile,
-                'product_serial_number' => $payment->serial_number ,
-                 'transaction_number'=> $payment->ref_id ,
-                'payment_status'=>'success'
-            ]);
-           /// SendSmsPaymentJob::dispatch($payment->mobile, trans('messages.sendSmsOnlineFirst'));
 
+        $username = $this->formatMobileNumber($payment->mobile);
+        $paymentStatus = (!empty($result) && $result !== false) ? 'success' : 'failed';
+
+        $this->holooSubscription->confirmRenewal([
+            'username'               => $username,
+            'product_serial_number'  => $payment->serial_number,
+            'transaction_number'     => $payment->transaction_id,
+            'payment_status'         => $paymentStatus
+        ]);
+
+        if ($paymentStatus === 'success') {
+            SendSmsJob::dispatchSync($payment->mobile, trans('messages.successfully'));
             return redirect()->to(config('app.web_url') . 'SUCCESSFUL/' . $result . '/' . $payment->created_at);
         }
-        $this->holooSubscription->confirmRenewal([
-            'username'=>$payment->mobile,
-            'product_serial_number' => $payment->serial_number ,
-            'transaction_number'=> ($payment->ref_id)? $payment->ref_id : '',
-            'payment_status'=>'failed'
-        ]);
-        return $this->handleErrorStatus($request->Status);
+         return $this->handleErrorStatus($request->Status);
     }
-
-    protected function handleErrorStatus($status): \Illuminate\Http\RedirectResponse
+    private function handleErrorStatus($status): \Illuminate\Http\RedirectResponse
     {
         switch ($status) {
             case 'UNKNOWN':
@@ -77,4 +74,9 @@ class PaymentController extends Controller
                 return redirect()->to(config('app.web_url') . 'UNKNOWN');
         }
     }
+    private function formatMobileNumber(string $mobile): string
+    {
+        return (strpos($mobile, '0') === 0) ? '+98' . substr($mobile, 1) : $mobile;
+    }
+
 }

@@ -22,11 +22,10 @@ class InvoiceController extends Controller
     }
 
     public function store(Request $request)
-    { 
+    {
         return $this->services->getPrices($request->series);
     }
     public function getSeries(Request $request){
-
         return $this->services->ApiPrices($request->series);
     }
 }

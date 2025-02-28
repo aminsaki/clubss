@@ -27,8 +27,10 @@ return new class extends Migration {
             $table->timestamp('paid_at')->nullable();
             $table->string('ip_address')->nullable();
             $table->string('bank')->nullable();
+            $table->string('mobile');
             $table->string('card_number')->nullable();
             $table->string('merchant_id')->nullable();
+            $table->string('serial_number');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -9,8 +9,8 @@
       <span class="text-gray-800 ml-4">در حال انجام بررسی اطلاعات...</span>
     </div>
     <div v-else>
-      <div v-if="Object(prices).result">
-        <user-information  :data="results" :price="prices"></user-information>
+      <div v-if="Object(results).serial">
+        <user-information  :data="results"></user-information>
       </div>
       <div class="container mt-5 d-flex justify-content-center" v-else>
         <div
@@ -32,7 +32,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 <script setup>
@@ -45,7 +44,6 @@ import UserInformation from "@/home/components/invoice/userInformation.vue";
 
 let route = useRoute();
 let results = $ref({});
-let prices = $ref({});
 let loading = $ref(true);
 
 async function checkCode() {
@@ -54,6 +52,7 @@ async function checkCode() {
     const res = response.data;
     if (res.status === 'true') {
       results = res.data;
+      loading = false;
       return true;
     }
   } catch (error) {
@@ -61,22 +60,9 @@ async function checkCode() {
     loading = false;
   }
 }
-async function getPrices() {
-  try {
-    const response = await axios.post(`invoices`, {series: route.params.series});
-    const res = response.data;
-    if (res.status === 'true') {
-      prices = res.data;
-      loading = false;
-    }
-  } catch (error) {
-    myErrors(error);
-    loading = false;
-  }
-}
+
 
 onMounted(async () => {
   await checkCode();
-  await getPrices()
 });
 </script>

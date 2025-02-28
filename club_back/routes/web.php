@@ -1,4 +1,7 @@
 <?php
+
+use holoo\modules\Bases\Jobs\SendSmsJob;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -11,14 +14,23 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
-Route::get('/web', function () {
-
-      echo "<h4>poamsdfpoasdmposadfmposadfmpoasdfmo</h4>";
-});
 Route::get('/', function () {
 
-    echo " <h1 style='text-align: center; margin-top: 150px; color:red; ' > holoo Information Technology sdffGroup  </h1>";
+  echo " <h1 style='text-align: center; margin-top: 150px; color:red; ' > holoo Information Technology sdffGroup  </h1>";
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
 
 
 
