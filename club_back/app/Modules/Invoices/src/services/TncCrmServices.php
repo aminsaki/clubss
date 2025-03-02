@@ -112,7 +112,6 @@ class TncCrmServices
             return $this->responses->notFound('', "خطا در دریافت اطلاعات پرداخت: " . $e->getMessage());
         }
     }
-
     public function setPayment($uuid, $billCode)
     {
         try {
@@ -121,7 +120,6 @@ class TncCrmServices
                 'uuid' => $uuid,
                 'billCode' => $billCode,
             ];
-
             $result = $this->soapClient->__soapCall('setPayment', $data);
             $inovice = Inovice::where(['uuid'=>$uuid])->update(['response'=>$result]);
             //return $this->responses->success($result, '', true);

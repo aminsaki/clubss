@@ -3,9 +3,11 @@
 namespace holoo\modules\Payments\Contracts;
 
 
+use App\Models\User;
 use holoo\modules\Bases\Http\Contracts\BaseRepository;
 use holoo\modules\Invoices\Contracts\InvoiceInterface;
 use holoo\modules\Payments\Models\Payment;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentRepository  extends BaseRepository implements InvoiceInterface
 {

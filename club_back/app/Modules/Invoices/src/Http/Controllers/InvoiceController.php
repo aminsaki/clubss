@@ -15,7 +15,6 @@ class InvoiceController extends Controller
     public function index()
     {
     }
-
     public function show($series)
     {
         return $this->services->getUserInformation($series);

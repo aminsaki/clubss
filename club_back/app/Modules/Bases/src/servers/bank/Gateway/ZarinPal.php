@@ -27,13 +27,11 @@ class ZarinPal implements PaymentGatewayInterface
         $this->request = config('client.ZarinPal.request');
         $this->verify = config('client.ZarinPal.verify');
     }
-
     public function startPayment($amount, $desc, $mobile = null, $email = null, $id = null): mixed
     {
         $mobile = $this->normalizeMobileNumber($mobile);
         $metaDate = ($email) ? ['email' => $email] : ['mobile' => $mobile];
         $amount = (int)$amount;
-
         $payment = Payment::create([
             'user_id' => 1,
             "amount" => $amount,
@@ -69,7 +67,6 @@ class ZarinPal implements PaymentGatewayInterface
             return false;
         }
     }
-
     public function verify($params)
     {
         try {
@@ -116,7 +113,6 @@ class ZarinPal implements PaymentGatewayInterface
             return false;
         }
     }
-
     public function getErrorTrans($code): ?string
     {
         $cases = [

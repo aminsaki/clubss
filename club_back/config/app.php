@@ -7,6 +7,7 @@ return [
      #'base_url' => 'http://localhost:8000',
     #'web_url' => 'http://localhost:3000/payment/status/',
     'base_url' => 'https://club2.holootech.ir/',
+
     'web_url' => 'https://club2.holootech.ir/payment/status/',
     /*
     |--------------------------------------------------------------------------

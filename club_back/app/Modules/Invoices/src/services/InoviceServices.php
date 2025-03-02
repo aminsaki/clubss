@@ -9,7 +9,6 @@ class InoviceServices
 
     public function __construct( protected TncCrmServices $crmServices  , protected  Responses $responses)
     {
-
     }
    public function getUserInformation($code)
    {
@@ -43,9 +42,6 @@ class InoviceServices
 
 
 }
-
-
-
 
 
 

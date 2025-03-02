@@ -1,5 +1,4 @@
 <?php
-
 namespace holoo\modules\Invoices;
 use holoo\modules\Invoices\Contracts\InvoiceInterface;
 use holoo\modules\Invoices\Contracts\InvoiceRepository;

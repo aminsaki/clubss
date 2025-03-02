@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('tnc_order_type')->nullable();
             $table->string('tnc_uuid')->nullable();
             $table->string('response')->nullable();
+
             $table->timestamps();
         });
     }
