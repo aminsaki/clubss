@@ -4,10 +4,10 @@
     <div class="container d-flex justify-content-center  ">
       <!--    success   UNSUCCESSFUL-->
       <div class="d-flex flex-column card col-md-5 p-2 " v-if="MethodState(status) === 'SUCCESSFUL'">
-        <table class="table table-striped" style="direction: rtl;">
+        <table class="table table-striped  resultPaymets  " style="direction: rtl; ">
           <thead>
-          <tr>
-            <th colspan="2">
+          <tr style="text-align: center" >
+            <th colspan="2"  >
               <i class="fa fa-check-circle fs-1 text-green-600 "></i>
               <h5 class="text-green-600 p-3">تراکنش با موفقیت انجام شده</h5>
             </th>
@@ -72,3 +72,8 @@ function MethodState(status) {
 }
 
 </script>
+<style >
+.table > thead {
+  text-align: center !important;
+}
+</style>

@@ -1,31 +1,37 @@
 <template>
   <div class="mb-4">
-    <h5 class="text-center text-lg p-3 ">خلاصه پرداخت</h5>
-    <ul class="list-group" v-if="props?.price?.article">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <h6 style="direction: rtl">
-            <span
-              class="text-red-900 text-lg">{{ numberFormats(props?.price?.article[0]?.price) }}</span>
-          ریال
-        </h6>
-        <span class="text-teal-600">{{ props?.price?.article[0]?.title }}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <h6 style="direction: rtl">
-          <span class="text-red-900 text-lg">{{ numberFormats(props.price?.maliyat) }}</span> ریال
-        </h6>
-        <span class="text-teal-600">مالیات</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <h6 style="direction: rtl">
-          <span class="text-red-900 text-lg">{{ numberFormats(props.price.totalprice) }}</span>
-          ریال
-        </h6>
-        <span class="text-teal-600">جمع کل</span>
-      </li>
-    </ul>
+    <div v-if="props?.price.result === false ">
+       <h1 class="d-flex justify-content-center p-2 text-ellipsis text-bold  text-xl  ">{{props.price.message}}</h1>
+    </div>
+
+     <div v-else>
+       <h5 class="text-center text-lg p-3 ">خلاصه پرداخت</h5>
+       <ul class="list-group" v-if="props?.price?.article">
+         <li v-for="(item, index) in props.price.article" :key="index" class="list-group-item d-flex justify-content-between align-items-center">
+           <h6 style="direction: rtl">
+             <span class="text-red-900 text-lg">{{ numberFormats(roundToNearestThousand(item.price)) }}</span>
+             ریال
+           </h6>
+           <span class="text-teal-600">{{ item.title }}</span>
+         </li>
+         <li class="list-group-item d-flex justify-content-between align-items-center">
+           <h6 style="direction: rtl">
+             <span class="text-red-900 text-lg">{{ numberFormats(roundToNearestThousand(props.price?.maliyat)) }}</span> ریال
+           </h6>
+           <span class="text-teal-600">مالیات</span>
+         </li>
+
+         <li class="list-group-item d-flex justify-content-between align-items-center">
+           <h6 style="direction: rtl">
+             <span class="text-red-900 text-lg">{{ numberFormats(roundToNearestThousand(props.price.totalprice)) }}</span>
+             ریال
+           </h6>
+           <span class="text-teal-600">جمع کل</span>
+         </li>
+       </ul>
+     </div>
   </div>
-  <div class="d-grid gap-2">
+  <div class="d-grid gap-2" v-if="props?.price.result === true ">
 
     <button v-if="btnSttus" type="button"
             class="text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
@@ -62,8 +68,8 @@ const props = defineProps({
   }
   btnSttus = true;
   try {
-     window.location.href =`https://clubs.holootech.ir/api/v1/payments/pay?uid=${price}&mobile=${mobile}&serial_number=${props.data.serial}`;
-    //  window.location.href =`http://localhost:8000/api/v1/payments/pay?uid=${price}&mobile=${mobile}&serial_number=${props.data.serial}`;
+      window.location.href =`https://clubs.holootech.ir/api/v1/payments/pay?uid=${price}&mobile=${mobile}&serial_number=${props.data.serial}`;
+      // window.location.href =`http://localhost:8000/api/v1/payments/pay?uid=${price}&mobile=${mobile}&serial_number=${props.data.serial}`;
 
     return false;
   } catch (error) {
@@ -71,4 +77,10 @@ const props = defineProps({
     myErrors(error);
   }
  }
+
+
+function roundToNearestThousand(price) {
+    return  price;
+  // return Math.round(price / 10) * 10;
+}
 </script>

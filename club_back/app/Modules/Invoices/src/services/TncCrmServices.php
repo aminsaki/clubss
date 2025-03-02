@@ -1,7 +1,10 @@
 <?php
+
 namespace holoo\modules\Invoices\services;
 
 use holoo\modules\Bases\Helper\Responses;
+use holoo\modules\Invoices\Contracts\InvoiceInterface;
+use holoo\modules\Invoices\Models\Inovice;
 use Illuminate\Support\Facades\Log;
 use SoapClient;
 
@@ -9,11 +12,11 @@ class TncCrmServices
 {
     protected string $crmServiceWSDL = "http://service.tnc.ir:8080/WebSite/WebSite?wsdl";
     protected int $terminalId = 23067;
-    protected  $referenceId;
+    protected $referenceId;
     protected SoapClient $soapClient;
     private static ?TncCrmServices $instance = null;
 
-    public function __construct(protected Responses $responses)
+    public function __construct(protected Responses $responses, protected InvoiceInterface $invoice)
     {
         $wsdlContent = @file_get_contents($this->crmServiceWSDL);
         if ($wsdlContent === false) {
@@ -23,6 +26,7 @@ class TncCrmServices
         $this->soapClient = new SoapClient($this->crmServiceWSDL);
         $this->referenceId = $this->getReferenceId($this->terminalId);
     }
+
     public static function getInstance(): ?TncCrmServices
     {
         if (is_null(self::$instance)) {
@@ -30,15 +34,17 @@ class TncCrmServices
         }
         return self::$instance;
     }
+
     protected function getReferenceId($terminalId): string
     {
         try {
             $referenceId = $this->soapClient->GetReferenceId($terminalId);
-             return md5("!TNC@23067#" . $referenceId . "$");
+            return md5("!TNC@23067#" . $referenceId . "$");
         } catch (SoapFault $e) {
             return $this->responses->notFound('', "خطا در دریافت شناسه مرجع: " . $e->getMessage());
         }
     }
+
     public function getSerialData($serial)
     {
         try {
@@ -47,13 +53,14 @@ class TncCrmServices
                 'serial' => $serial,
             ];
             $result = $this->soapClient->__soapCall('getSerialData', $data);
-            return  $this->responses->success(json_decode($result), '',true);
+            return $this->responses->success(json_decode($result), '', true);
         } catch (SoapFault $e) {
             $this->responses->notFound('', "خطا در دریافت اطلاعات سریال: " . $e->getMessage());
-            log::error(' getSerialData error' .'=>'. 'خطایی در دریافت اطلاعات سریال رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
+            log::error(' getSerialData error' . '=>' . 'خطایی در دریافت اطلاعات سریال رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
         }
     }
-    public function setSalePayment($softCode, $newKits, $billCode, $siteId, $party): array|\Illuminate\Http\JsonResponse
+
+    public function setSalePayment($softCode, $newKits, $billCode, $siteId, $party, $serial): void
     {
         try {
             $data = [
@@ -65,12 +72,12 @@ class TncCrmServices
                 'party' => json_encode($party, JSON_UNESCAPED_UNICODE)
             ];
             $result = $this->soapClient->__soapCall('setSalePayment', [$data]);
-          return   $this->responses->success($result, '',true);
+            $this->invoice->update(['serial' => $serial], ['response' => $result]);
         } catch (SoapFault $e) {
-            $this->responses->notFound('', "خطا در پرداخت سفارش: " . $e->getMessage());
-            return ['error' => 'خطایی در پردازش پرداخت رخ داده است. لطفاً بعداً دوباره امتحان کنید.'];
+            $this->invoice->update(['serial' => $serial], ['response' => $e->getMessage()]);
         }
     }
+
     public function getPayment($serial, $renew = false, $newCode = '')
     {
         try {
@@ -84,14 +91,28 @@ class TncCrmServices
                 'IsNeedCD' => 0,
                 'newCode' => json_encode(['isLogin' => false, 'newCode' => $newCode])
             ];
-
             $result = $this->soapClient->__soapCall('getPayment', $data);
-           return  $this->responses->success(json_decode($result), '',true);
+            $json = json_decode($result);
+            $result = Inovice::where(['serial' => $json->serialInfo->serial])->first();
+            if (!$result) {
+                $this->invoice->create([
+                    'partyName' => $json->serialInfo->partyName,
+                    'partyFamily' => $json->serialInfo->partyFamily,
+                    'partyAddress' => $json->serialInfo->partyAddress,
+                    'partyNationalCode' => $json->serialInfo->partyNationalCode,
+                    'partyTell' => $json->serialInfo->partyTell,
+                    'partyMobile' => $json->serialInfo->partyMobile,
+                    'serial' => $json->serialInfo->serial,
+                    'uuid' => $json->uuid,
+                ]);
+            }
+            return $this->responses->success($json, '', true);
         } catch (SoapFault $e) {
-            log::error('error' .'=>'. 'خطایی در دریافت اطلاعات پرداخت رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
-            return  $this->responses->notFound('', "خطا در دریافت اطلاعات پرداخت: " . $e->getMessage());
+            log::error('error' . '=>' . 'خطایی در دریافت اطلاعات پرداخت رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
+            return $this->responses->notFound('', "خطا در دریافت اطلاعات پرداخت: " . $e->getMessage());
         }
     }
+
     public function setPayment($uuid, $billCode)
     {
         try {
@@ -100,11 +121,13 @@ class TncCrmServices
                 'uuid' => $uuid,
                 'billCode' => $billCode,
             ];
-            $result = $this->soapClient->__soapCall('setPayment', [$data]);
-            return  $this->responses->success($result, '',true);
+
+            $result = $this->soapClient->__soapCall('setPayment', $data);
+            $inovice = Inovice::where(['uuid'=>$uuid])->update(['response'=>$result]);
+            //return $this->responses->success($result, '', true);
         } catch (SoapFault $e) {
-            $this->responses->notFound('', "خطا در ثبت پرداخت: " . $e->getMessage());
-            log::error('error'.' => '.'خطایی در ثبت پرداخت رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
+            $inovice = Inovice::where(['uuid'=>$uuid])->update(['response'=> $e->getMessage()]);
+            log::error('error' . ' => ' . 'خطایی در ثبت پرداخت رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
         }
     }
 }

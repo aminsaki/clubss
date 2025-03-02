@@ -7,6 +7,8 @@ use App\Modules\Payments\src\services\HolooSubscription;
 use holoo\modules\Bases\Helper\Responses;
 use holoo\modules\Bases\Jobs\SendSmsJob;
 use holoo\modules\Bases\servers\bank\PaymentGatewayInterface;
+use holoo\modules\Invoices\Models\Inovice;
+use holoo\modules\Invoices\services\TncCrmServices;
 use holoo\modules\Payments\Models\Payment;
 use Illuminate\Http\Request;
 
@@ -16,6 +18,7 @@ class PaymentController extends Controller
          protected Responses $responses,
          protected  PaymentGatewayInterface $gateway,
          protected  HolooSubscription $holooSubscription,
+         protected TncCrmServices $crmServices
      ){}
     public function pay(Request $request)
     {
@@ -54,9 +57,11 @@ class PaymentController extends Controller
             'transaction_number'     => $payment->transaction_id,
             'payment_status'         => $paymentStatus
         ]);
-
         if ($paymentStatus === 'success') {
             SendSmsJob::dispatchSync($payment->mobile, trans('messages.successfully'));
+             $inovice = Inovice::where(['serial'=>$payment->serial_number])->first();
+
+                 $this->crmServices->setPayment($inovice->uuid , $result);
             return redirect()->to(config('app.web_url') . 'SUCCESSFUL/' . $result . '/' . $payment->created_at);
         }
          return $this->handleErrorStatus($request->Status);

@@ -36,7 +36,7 @@ class ZarinPal implements PaymentGatewayInterface
 
         $payment = Payment::create([
             'user_id' => 1,
-            "amount" => 20000,
+            "amount" => $amount,
             'status' => 'pending',
             'mobile' => $mobile,
             'serial_number' => $id
@@ -44,7 +44,7 @@ class ZarinPal implements PaymentGatewayInterface
 
         $data = [
             'merchant_id' => $this->merchant_id,
-            'amount' => 20000,
+            'amount' => $amount,
             'callback_url' => $this->callBack,
             'description' => $desc,
             'metadata' => $metaDate,

@@ -22,7 +22,6 @@ class InoviceServices
     public function ApiPrices($serial)
     {
           $result =    $this->crmServices->getPayment($serial, true, '');
-
            if($result->getOriginalContent()['status'] === 'true'){
               $data = $result->getOriginalContent()['data'];
 

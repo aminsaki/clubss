@@ -59,7 +59,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     public function  firstWhereModle(?array $where = null, ?string $model = null)
     {
-
         return match (true) {
             !empty($where) && $model => $this->model->with($model)->where($where)->first(),
             !empty($where) => $this->model->where($where)->first(),
@@ -69,7 +68,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
     public function  firstRow(?array $where = null, ?string $model = null)
     {
-
         return $this->model->first();
     }
 }

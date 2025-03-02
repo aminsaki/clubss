@@ -31,6 +31,6 @@ class InvoiceServiceProvider extends ServiceProvider
     }
     protected function getMigrationsFrom(): void
     {
-//       $this->loadMigrationsFrom(__DIR__ . '/../databases/migrations');
+      $this->loadMigrationsFrom(__DIR__ . '/../databases/migrations');
     }
 }

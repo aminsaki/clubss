@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="0711360f-9869-4e53-96f6-d257b2630e3f" name="holoostore.com" url="http://holoostore.com">
+        <fileTransfer rootFolder="/domains/holoostore.com/public_html/renew/wp-content/plugins/wptnc-v_1.1.1" host="holoostore.com" port="21">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

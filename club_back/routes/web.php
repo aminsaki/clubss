@@ -15,7 +15,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Route::get('/', function () {
-
   echo " <h1 style='text-align: center; margin-top: 150px; color:red; ' > holoo Information Technology sdffGroup  </h1>";
 
 

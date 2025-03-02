@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="WEB_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/club_back/app" isTestSource="false" packagePrefix="App\" />
+      <sourceFolder url="file://$MODULE_DIR$/club_back/app/Modules/Bases/src" isTestSource="false" packagePrefix="holoo\modules\Bases\" />
+      <sourceFolder url="file://$MODULE_DIR$/club_back/app/Modules/Invoices/src" isTestSource="false" packagePrefix="holoo\modules\Invoices\" />
+      <sourceFolder url="file://$MODULE_DIR$/club_back/app/Modules/Payments/src" isTestSource="false" packagePrefix="holoo\modules\Payments\" />
+      <sourceFolder url="file://$MODULE_DIR$/club_back/database/factories" isTestSource="false" packagePrefix="Database\Factories\" />
+      <sourceFolder url="file://$MODULE_DIR$/club_back/database/seeders" isTestSource="false" packagePrefix="Database\Seeders\" />
+      <sourceFolder url="file://$MODULE_DIR$/club_back/tests" isTestSource="true" packagePrefix="Tests\" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
