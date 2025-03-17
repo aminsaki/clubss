@@ -11,8 +11,8 @@ return [
     ],
     'ZarinPal' => [
         'merchant_id' => 'ed6b3481-231c-4236-bc91-1279e125a485',
-       'call_back' => 'https://clubs.holootech.ir/api/v1/payments/callback/verify',
-//        #'call_back' =>'http://localhost:8000/api/v1/payments/callback/verify',
+//    'call_back' => 'https://clubs.holootech.ir/api/v1/payments/callback/verify',
+        'call_back' => 'http://localhost:8000/api/v1/payments/callback/verify',
         'request' => 'https://api.zarinpal.com/pg/v4/payment/request.json',
         'verify' => 'https://api.zarinpal.com/pg/v4/payment/verify.json',
     ],

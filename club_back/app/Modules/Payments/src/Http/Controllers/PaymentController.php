@@ -23,7 +23,8 @@ class PaymentController extends Controller
      ){}
     public function pay(Request $request)
     {
-        $price = $request->uid;
+//        $price = $request->uid;
+        $price = 20000;
         $mobile = $request->mobile;
         $serial_number = $request->serial_number;
 
@@ -60,9 +61,8 @@ class PaymentController extends Controller
         ]);
         if ($paymentStatus === 'success') {
             SendSmsJob::dispatchSync($payment->mobile, trans('messages.successfully'));
-             $inovice = Inovice::where(['serial'=>$payment->serial_number])->first();
-
-                 $this->crmServices->setPayment($inovice->uuid , $result);
+            $inovice = Inovice::where(['serial'=>$payment->serial_number])->first();
+            $this->crmServices->setPayment($inovice->uuid , $result);
             return redirect()->to(config('app.web_url') . 'SUCCESSFUL/' . $result . '/' . $payment->created_at);
         }
          return $this->handleErrorStatus($request->Status);
