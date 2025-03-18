@@ -10,13 +10,13 @@ class HolooSubscription
     public function confirmRenewal($data = [])
     {
         Log::info('Sending request to Holoo Subscription Renewal API', [
-            'url' => 'https://holoo.bizups.ai/api/holoo/subscription-renewal/confirm',
+            'url' => 'https://club.holoo.co.ir/api/holoo/subscription-renewal/confirm',
             'payload' => $data,
         ]);
         try {
             $result =Http::withHeaders([
                 'Content-Type' => 'application/json',
-            ])->post('https://holoo.bizups.ai/api/holoo/subscription-renewal/confirm', $data);
+            ])->post('https://club.holoo.co.ir/api/holoo/subscription-renewal/confirm', $data);
 
             Log::info('Response from Holoo Subscription Renewal API', [
                 'status_code' => $result->status(),
