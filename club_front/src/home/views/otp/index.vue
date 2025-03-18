@@ -25,7 +25,7 @@
     <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md" v-else>
       <h2 class="text-center text-2xl font-bold text-gray-800 mb-4">ورود با شماره تلفن</h2>
       <div class="mb-4">
-        <label class="form-label text-gray-700 font-medium">شماره تلفن:<span class="text-sm text-danger">(لطفا به جا صفر از +98 استفاده کنید)</span> </label>
+        <label class="form-label text-gray-700 font-medium">شماره تلفن:<span class="text-sm text-danger">(لطفا به جا صفر از98+ استفاده کنید)</span> </label>
         <input
           v-model="phoneNumber"
           type="tel"
@@ -91,7 +91,7 @@ function MethodState(status) {
   return "UNKNOWN";
 }
 const customAxios = axios.create({
-  baseURL: 'https://holoo.bizups.ai/',
+  baseURL: 'http://club.holoo.co.ir/',
 
 });
 

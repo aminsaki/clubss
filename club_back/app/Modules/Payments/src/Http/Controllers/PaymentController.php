@@ -27,7 +27,6 @@ class PaymentController extends Controller
 //        $price = 20000;
         $mobile = $request->mobile;
         $serial_number = $request->serial_number;
-
         if ($price < 20000 || empty($price)) {
             return $this->responses->notFound('', 'مبلغ شما باید بیشتر از 2000 تومان باشد');
         }
