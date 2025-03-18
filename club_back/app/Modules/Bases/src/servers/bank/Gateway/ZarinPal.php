@@ -83,7 +83,7 @@ class ZarinPal implements PaymentGatewayInterface
             $data = [
                 'merchant_id' => $this->merchant_id,
                 'authority' => $params['Authority'],
-                'amount' => 20000,
+                'amount' => $payment->amount,
             ];
             // Make the HTTP request to verify the payment
             $response = Http::post($this->verify, $data);
