@@ -23,8 +23,8 @@ class PaymentController extends Controller
      ){}
     public function pay(Request $request)
     {
-//        $price = $request->uid;
-        $price = 20000;
+        $price = $request->uid;
+//        $price = 20000;
         $mobile = $request->mobile;
         $serial_number = $request->serial_number;
 
