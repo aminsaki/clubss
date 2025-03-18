@@ -139,7 +139,7 @@ const verifyCode = async () => {
     otp_code: verificationCode,
     user_type: "PERSONAL",
   };
-  axios.post('api/iam/auth/register/otp', data, {
+  customAxios.post('api/iam/auth/register/otp', data, {
     headers: {
       'Accept': 'application/json',
       'Accept-Language': 'en',

@@ -6,11 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="9849e9a2-9ead-41cc-b645-48ed1213390b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/club_back/app/Modules/Invoices/src/services/TncCrmServices.php" beforeDir="false" afterPath="$PROJECT_DIR$/club_back/app/Modules/Invoices/src/services/TncCrmServices.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/club_back/config/app.php" beforeDir="false" afterPath="$PROJECT_DIR$/club_back/config/app.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/club_back/config/client.php" beforeDir="false" afterPath="$PROJECT_DIR$/club_back/config/client.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/club_front/src/home/views/otp/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/club_front/src/home/views/otp/index.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/club_front/src/home/views/payment/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/club_front/src/home/views/payment/index.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -406,7 +402,7 @@
       <workItem from="1740915590675" duration="11387000" />
       <workItem from="1742217277728" duration="4460000" />
       <workItem from="1742284903721" duration="3592000" />
-      <workItem from="1742290988297" duration="6453000" />
+      <workItem from="1742290988297" duration="7624000" />
     </task>
     <servers />
   </component>
