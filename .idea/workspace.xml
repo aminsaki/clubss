@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9849e9a2-9ead-41cc-b645-48ed1213390b" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/55555.zip" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/club_back/app/Modules/Payments/src/Http/Controllers/PaymentController.php" beforeDir="false" afterPath="$PROJECT_DIR$/club_back/app/Modules/Payments/src/Http/Controllers/PaymentController.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/club_front/src/home/components/invoice/btn_payment.vue" beforeDir="false" afterPath="$PROJECT_DIR$/club_front/src/home/components/invoice/btn_payment.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/club_front/src/home/views/otp/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/club_front/src/home/views/otp/index.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -404,7 +402,7 @@
       <workItem from="1740915590675" duration="11387000" />
       <workItem from="1742217277728" duration="4460000" />
       <workItem from="1742284903721" duration="3592000" />
-      <workItem from="1742290988297" duration="14375000" />
+      <workItem from="1742290988297" duration="14829000" />
     </task>
     <servers />
   </component>
