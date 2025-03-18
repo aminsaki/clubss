@@ -68,9 +68,8 @@ const props = defineProps({
   }
   btnSttus = true;
   try {
-      // window.location.href =`https://clubs.holootech.ir/api/v1/payments/pay?uid=${price}&mobile=${mobile}&serial_number=${props.data.serial}`;
-      window.location.href =`http://localhost:8000/api/v1/payments/pay?uid=${price}&mobile=${mobile}&serial_number=${props.data.serial}`;
-
+       window.location.href =`https://clubs.holootech.ir/api/v1/payments/pay?uid=${price}&mobile=${mobile}&serial_number=${props.data.serial}`;
+      // window.location.href =`http://localhost:8000/api/v1/payments/pay?uid=${price}&mobile=${mobile}&serial_number=${props.data.serial}`;
     return false;
   } catch (error) {
     btnSttus = false;
