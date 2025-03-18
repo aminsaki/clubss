@@ -94,16 +94,16 @@ class TncCrmServices
             $result = $this->soapClient->__soapCall('getPayment', $data);
             $json = json_decode($result);
             $result = Inovice::where(['serial' => $json->serialInfo->serial])->first();
-            if (!$result) {
+            if (!$result && $json->serialInfo) {
                 $this->invoice->create([
-                    'partyName' => $json->serialInfo->partyName,
-                    'partyFamily' => $json->serialInfo->partyFamily,
-                    'partyAddress' => $json->serialInfo->partyAddress,
-                    'partyNationalCode' => $json->serialInfo->partyNationalCode,
-                    'partyTell' => $json->serialInfo->partyTell,
-                    'partyMobile' => $json->serialInfo->partyMobile,
-                    'serial' => $json->serialInfo->serial,
-                    'uuid' => $json->uuid,
+                    'partyName' => !empty($json->serialInfo->partyName) ? $json->serialInfo->partyName : "",
+                    'partyFamily' => !empty($json->serialInfo->partyFamily) ? $json->serialInfo->partyFamily : "",
+                    'partyAddress' => !empty($json->serialInfo->partyAddress) ? $json->serialInfo->partyAddress : "",
+                    'partyNationalCode' => !empty($json->serialInfo->partyNationalCode) ? $json->serialInfo->partyNationalCode : "",
+                    'partyTell' => !empty($json->serialInfo->partyTell) ? $json->serialInfo->partyTell : "",
+                    'partyMobile' => !empty($json->serialInfo->partyMobile) ? $json->serialInfo->partyMobile : "",
+                    'serial' => !empty($json->serialInfo->serial) ? $json->serialInfo->serial : "",
+                    'uuid' => !empty($json->uuid) ? $json->uuid : "",
                 ]);
             }
             return $this->responses->success($json, '', true);
@@ -112,6 +112,7 @@ class TncCrmServices
             return $this->responses->notFound('', "خطا در دریافت اطلاعات پرداخت: " . $e->getMessage());
         }
     }
+
     public function setPayment($uuid, $billCode)
     {
         try {
@@ -121,10 +122,10 @@ class TncCrmServices
                 'billCode' => $billCode,
             ];
             $result = $this->soapClient->__soapCall('setPayment', $data);
-            $inovice = Inovice::where(['uuid'=>$uuid])->update(['response'=>$result]);
+            $inovice = Inovice::where(['uuid' => $uuid])->update(['response' => $result]);
             //return $this->responses->success($result, '', true);
         } catch (SoapFault $e) {
-            $inovice = Inovice::where(['uuid'=>$uuid])->update(['response'=> $e->getMessage()]);
+            $inovice = Inovice::where(['uuid' => $uuid])->update(['response' => $e->getMessage()]);
             log::error('error' . ' => ' . 'خطایی در ثبت پرداخت رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
         }
     }

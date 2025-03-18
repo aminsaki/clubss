@@ -45,7 +45,6 @@ const route = useRoute()
 let status = $ref(route.params.params[0]);
 let ref_id = $ref((route.params.params[1]) ? route.params.params[1] : 0);
 let date = $ref((route.params.params[2]) ? route.params.params[2] : 0);
-
 function MethodState(status) {
   if (status === "SUCCESSFUL") {
     return "SUCCESSFUL";

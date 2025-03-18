@@ -1,13 +1,37 @@
 <template>
   <div class="flex  justify-center">
-    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
+    <div class="d-flex flex-column card col-md-5 p-2 " v-if="statusOtp === 'SUCCESSFUL'">
+      <table class="table table-striped  resultPaymets  " style="direction: rtl; ">
+        <thead>
+        <tr style="text-align: center" >
+          <th colspan="2"  >
+            <i class="fa fa-check-circle fs-1 text-green-600 "></i>
+            <h5 class="text-green-600 p-3">تراکنش با موفقیت انجام شده</h5>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-if="ref_id">
+          <td class="p-3"><i class="fa fa-receipt text-rose-500  "></i> کد رهگیری</td>
+          <td class="p-3">{{ ref_id }}</td>
+        </tr>
+        <tr v-if="date ">
+          <td class="p-3"><i class="fa fa-calendar-alt text-rose-500 "></i> زمان </td>
+          <td class="p-3">{{ dates.converDatePersian(date) }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md" v-else>
       <h2 class="text-center text-2xl font-bold text-gray-800 mb-4">ورود با شماره تلفن</h2>
       <div class="mb-4">
-        <label class="form-label text-gray-700 font-medium">شماره تلفن:</label>
+        <label class="form-label text-gray-700 font-medium">شماره تلفن:<span class="text-sm text-danger">(لطفا به جا صفر از +98 استفاده کنید)</span> </label>
         <input
           v-model="phoneNumber"
           type="tel"
-          placeholder="مثال: 09123456789"
+          maxlength="13"
+          minlength="13"
+          placeholder="+98900428900"
           :disabled="isCodeSent"
           class="form-control px-3 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-blue-300 transition w-full"
         />
@@ -33,6 +57,12 @@
         >
           تأیید کد
         </button>
+        <button
+          @click="RestCode"
+          class="btn btn-outline-dark w-full mt-3 py-2 rounded-lg"
+        >
+          ریست کردن کد
+        </button>
       </div>
     </div>
   </div>
@@ -44,11 +74,30 @@ import axios from "axios";
 let phoneNumber = $ref('');
 let verificationCode = $ref('');
 let isCodeSent = $ref(false);
+import {useRoute} from 'vue-router'
+import * as dates from "@/commons/helpers/DatePersian.js";
+import {data} from "autoprefixer";
 
+
+const route = useRoute()
+let status = $ref(route.params.params[0]);
+let ref_id = $ref((route.params.params[1]) ? route.params.params[1] : 0);
+let date = $ref((route.params.params[2]) ? route.params.params[2] : 0);
+let statusOtp =  $ref('false');
+function MethodState(status) {
+  if (status === "SUCCESSFUL") {
+    return "SUCCESSFUL";
+  }
+  return "UNKNOWN";
+}
 const customAxios = axios.create({
-  // baseURL: 'http://localhost:5000/',
-  baseURL: 'https://holoosmart.ir/'
+  baseURL: 'https://holoo.bizups.ai/',
+
 });
+
+function RestCode(){
+  isCodeSent =  false;
+}
 const sendVerificationCode = async () => {
   if (!phoneNumber) {
     alert('لطفاً شماره تلفن خود را وارد کنید.');
@@ -56,10 +105,10 @@ const sendVerificationCode = async () => {
   }
   const data = {
     username: phoneNumber,
-    method: "login",
+    method: "signup",
     country_code: "IR"
   };
-  axios.post('https://holoo.bizups.ai/api/iam/auth/otp', data, {
+  customAxios.post('api/iam/auth/otp', data, {
     headers: {
       'Accept': 'application/json',
       'Accept-Language': 'en',
@@ -78,12 +127,39 @@ const sendVerificationCode = async () => {
 
 };
 const verifyCode = async () => {
+
   if (!verificationCode) {
     alert('لطفاً کد تأیید را وارد کنید.');
     return;
   }
-  console.log(`بررسی کد: ${verificationCode} برای شماره: ${phoneNumber}`);
-  alert('ورود موفقیت‌آمیز بود!');
+  const data = {
+    username: phoneNumber,
+    method: "signup",
+    country_code: "IR",
+    otp_code: verificationCode,
+    user_type: "PERSONAL",
+  };
+  axios.post('api/iam/auth/register/otp', data, {
+    headers: {
+      'Accept': 'application/json',
+      'Accept-Language': 'en',
+      'Content-Type': 'application/json'
+    }
+  })
+    .then(response => {
+      if(response.status ===201) {
+        statusOtp ='SUCCESSFUL';
+        return true
+      }else{
+        console.log(response);
+      }
+    })
+    .catch(error => {
+      isCodeSent = false;
+      verificationCode ="";
+      alert("متاسفانه کد وارد شده اشتباه می باشد یک بار دیگه امحتان کنید.")
+      console.error('Error:', error);
+    });
 };
 </script>
 <style scoped>
