@@ -51,6 +51,7 @@ import {myErrors} from "@/commons/helpers/errors.js";
 import axios from "axios";
 import {onMounted} from "vue";
 import {$ref} from "unplugin-vue-macros/macros";
+import Swal from "sweetalert2";
 let btnSttus = $ref(true);
 
 const props = defineProps({
@@ -62,10 +63,11 @@ const props = defineProps({
   btnSttus = false;
   let price = props.price.totalprice;
   let mobile = props.data.partyMobile;
+  if (price < 20000) {
+    Swal.fire({ icon: 'error', confirmButtonText: 'متوجه شدم', title: 'خطا', text: 'مبلغ پرداخت باید بیشتر از 2000 تومان باشد.' });
 
-  if (price < 0 || price === "") {
-    toast.success("مبلغ پرداخت باید بیشتر از 1000 تومان باشد");
-    return true;
+    btnSttus = true;
+     return ;
   }
   btnSttus = true;
   try {

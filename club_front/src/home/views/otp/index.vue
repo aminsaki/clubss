@@ -72,7 +72,7 @@ const formatPhoneNumber = () => {
 
 const sendVerificationCode = async () => {
   if (!phoneNumber.value || phoneError.value) {
-    Swal.fire({ icon: 'error', title: 'خطا', text: 'شماره تلفن نامعتبر است. لطفاً فرمت صحیح را رعایت کنید.' });
+    Swal.fire({ icon: 'error',  confirmButtonText: 'متوجه شدم' , title: 'خطا', text: 'شماره تلفن نامعتبر است. لطفاً فرمت صحیح را رعایت کنید.' });
     return;
   }
   loading.value = true;
@@ -83,9 +83,8 @@ const sendVerificationCode = async () => {
       country_code: 'IR',
     }, { headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' } });
     isCodeSent.value = true;
-    Swal.fire({ icon: 'success', title: 'موفق!', text: 'کد تأیید ارسال شد.' });
   } catch (error) {
-    Swal.fire({ icon: 'error', title: 'خطا', text: 'ارسال کد ناموفق بود. لطفا دوباره امتحان کنید.' });
+    Swal.fire({ icon: 'error', confirmButtonText: 'متوجه شدم' , title: 'خطا', text: 'ارسال کد ناموفق بود. لطفا دوباره امتحان کنید.' });
   } finally {
     loading.value = false;
   }
@@ -93,7 +92,7 @@ const sendVerificationCode = async () => {
 //
 const verifyCode = async () => {
   if (!verificationCode.value) {
-    Swal.fire({ icon: 'error', title: 'خطا', text: 'لطفاً کد تأیید را وارد کنید.' });
+    Swal.fire({ icon: 'error',  confirmButtonText: 'متوجه شدم' , title: 'خطا', text: 'لطفاً کد تأیید را وارد کنید.' });
     return;
   }
   loading.value = true;
@@ -108,10 +107,10 @@ const verifyCode = async () => {
     if (response.status === 201) {
        statusOtp.value = 'SUCCESSFUL';
     } else {
-      Swal.fire({ icon: 'error', title: 'خطا', text: 'کد تایید نامعتبر است.' });
+      Swal.fire({ icon: 'error', confirmButtonText: 'متوجه شدم' , title: 'خطا', text: 'کد تایید نامعتبر است.' });
     }
   } catch (error) {
-    Swal.fire({ icon: 'error', title: 'خطا', text: 'مشکلی در تایید کد به وجود آمد. لطفاً دوباره تلاش کنید.' });
+    Swal.fire({ icon: 'error', confirmButtonText: 'متوجه شدم' , title: 'خطا', text: 'مشکلی در تایید کد به وجود آمد. لطفاً دوباره تلاش کنید.' });
   } finally {
     loading.value = false;
   }
