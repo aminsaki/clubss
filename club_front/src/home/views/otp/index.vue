@@ -16,7 +16,6 @@
           class="form-control px-3 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-blue-300 transition w-full"
           @input="formatPhoneNumber"
         />
-        <p v-if="phoneError" class="text-red-500 mt-1">فرمت شماره تلفن نامعتبر است. لطفاً از فرمت صحیح استفاده کنید (مثال: +989904289707).</p>
         <p class="text-sm text-gray-500 mt-1">شماره تلفن شما به صورت خودکار به فرمت بین‌المللی تبدیل می‌شود (+98).</p>
         <button
           @click="sendVerificationCode"
