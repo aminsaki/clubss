@@ -21,8 +21,8 @@ import 'bootstrap/js/dist/popover.js';
 import '@/commons/assets/css/index.css'
 import VueAxios from "vue-axios";
 
-import webUrls from "@/../config/dev.json";
- // import webUrls from "@/../config/prod.json";
+// import webUrls from "@/../config/dev.json";
+ import webUrls from "@/../config/prod.json";
 
 axios.defaults.headers.common['Authorization'] = localStorage.getItem('token');
 axios.defaults.headers.common['Content-Type'] = 'application/x-www-form-urlencoded';
