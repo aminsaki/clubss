@@ -1,6 +1,5 @@
 <template>
   <section>
-    <br><br><br><br><br><br><br>
     <div class="row d-flex justify-content-center  ">
       <!--    success   UNSUCCESSFUL-->
       <div class="  col-md-10 p-2 " v-if="MethodState(status) === 'SUCCESSFUL'" style="direction: rtl">

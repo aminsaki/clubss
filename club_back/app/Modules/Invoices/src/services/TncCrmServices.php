@@ -7,6 +7,7 @@ use holoo\modules\Invoices\Contracts\InvoiceInterface;
 use holoo\modules\Invoices\Models\Inovice;
 use Illuminate\Support\Facades\Log;
 use SoapClient;
+use SoapFault;
 
 class TncCrmServices
 {
@@ -20,7 +21,8 @@ class TncCrmServices
     {
         $wsdlContent = @file_get_contents($this->crmServiceWSDL);
         if ($wsdlContent === false) {
-            $this->responses->notFound('', "خطا: فایل WSDL از مسیر {$this->crmServiceWSDL} بارگذاری نشد.");
+            Log::error("WSDL file could not be loaded from: {$this->crmServiceWSDL}");
+            $this->responses->notFound('', "Error: WSDL file could not be loaded.");
             return false;
         }
         $this->soapClient = new SoapClient($this->crmServiceWSDL);
@@ -41,7 +43,8 @@ class TncCrmServices
             $referenceId = $this->soapClient->GetReferenceId($terminalId);
             return md5("!TNC@23067#" . $referenceId . "$");
         } catch (SoapFault $e) {
-            return $this->responses->notFound('', "خطا در دریافت شناسه مرجع: " . $e->getMessage());
+            Log::error("Failed to retrieve reference ID: " . $e->getMessage());
+            return $this->responses->notFound('', "Error retrieving reference ID: " . $e->getMessage());
         }
     }
 
@@ -53,10 +56,13 @@ class TncCrmServices
                 'serial' => $serial,
             ];
             $result = $this->soapClient->__soapCall('getSerialData', $data);
+
+            Log::info("getSerialData successful: " . $result);
+
             return $this->responses->success(json_decode($result), '', true);
         } catch (SoapFault $e) {
-            $this->responses->notFound('', "خطا در دریافت اطلاعات سریال: " . $e->getMessage());
-            log::error(' getSerialData error' . '=>' . 'خطایی در دریافت اطلاعات سریال رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
+            Log::error("getSerialData failed: " . $e->getMessage());
+            return $this->responses->notFound('', "Error retrieving serial data: " . $e->getMessage());
         }
     }
 
@@ -72,8 +78,10 @@ class TncCrmServices
                 'party' => json_encode($party, JSON_UNESCAPED_UNICODE)
             ];
             $result = $this->soapClient->__soapCall('setSalePayment', [$data]);
+            Log::info("setSalePayment successful for serial: " . $serial);
             $this->invoice->update(['serial' => $serial], ['response' => $result]);
         } catch (SoapFault $e) {
+            Log::error("setSalePayment failed for serial: " . $serial . " | Error: " . $e->getMessage());
             $this->invoice->update(['serial' => $serial], ['response' => $e->getMessage()]);
         }
     }
@@ -93,23 +101,30 @@ class TncCrmServices
             ];
             $result = $this->soapClient->__soapCall('getPayment', $data);
             $json = json_decode($result);
-            $result = Inovice::where(['serial' => $json->serialInfo->serial])->first();
-            if (!$result && $json->serialInfo) {
+
+            if (!$json || !isset($json->serialInfo->serial)) {
+                Log::error("getPayment response is invalid for serial: " . $serial);
+                return $this->responses->notFound('', "Invalid payment data received.");
+            }
+
+            $existingInvoice = Inovice::where(['serial' => $json->serialInfo->serial])->first();
+            if (!$existingInvoice) {
                 $this->invoice->create([
-                    'partyName' => !empty($json->serialInfo->partyName) ? $json->serialInfo->partyName : "",
-                    'partyFamily' => !empty($json->serialInfo->partyFamily) ? $json->serialInfo->partyFamily : "",
-                    'partyAddress' => !empty($json->serialInfo->partyAddress) ? $json->serialInfo->partyAddress : "",
-                    'partyNationalCode' => !empty($json->serialInfo->partyNationalCode) ? $json->serialInfo->partyNationalCode : "",
-                    'partyTell' => !empty($json->serialInfo->partyTell) ? $json->serialInfo->partyTell : "",
-                    'partyMobile' => !empty($json->serialInfo->partyMobile) ? $json->serialInfo->partyMobile : "",
-                    'serial' => !empty($json->serialInfo->serial) ? $json->serialInfo->serial : "",
-                    'uuid' => !empty($json->uuid) ? $json->uuid : "",
+                    'partyName' => $json->serialInfo->partyName ?? "",
+                    'partyFamily' => $json->serialInfo->partyFamily ?? "",
+                    'partyAddress' => $json->serialInfo->partyAddress ?? "",
+                    'partyNationalCode' => $json->serialInfo->partyNationalCode ?? "",
+                    'partyTell' => $json->serialInfo->partyTell ?? "",
+                    'partyMobile' => $json->serialInfo->partyMobile ?? "",
+                    'serial' => $json->serialInfo->serial,
+                    'uuid' => $json->uuid ?? "",
                 ]);
             }
+            Log::error("getPayment response: " . json_encode($json));
             return $this->responses->success($json, '', true);
         } catch (SoapFault $e) {
-            log::error('error' . '=>' . 'خطایی در دریافت اطلاعات پرداخت رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
-            return $this->responses->notFound('', "خطا در دریافت اطلاعات پرداخت: " . $e->getMessage());
+            Log::error("getPayment failed for serial: " . $serial . " | Error: " . $e->getMessage());
+            return $this->responses->notFound('', "Error retrieving payment information: " . $e->getMessage());
         }
     }
 
@@ -122,11 +137,11 @@ class TncCrmServices
                 'billCode' => $billCode,
             ];
             $result = $this->soapClient->__soapCall('setPayment', $data);
-            $inovice = Inovice::where(['uuid' => $uuid])->update(['response' => $result]);
-            //return $this->responses->success($result, '', true);
+            Log::info("setPayment successful for UUID: " . $uuid);
+            Inovice::where(['uuid' => $uuid])->update(['response' => $result]);
         } catch (SoapFault $e) {
-            $inovice = Inovice::where(['uuid' => $uuid])->update(['response' => $e->getMessage()]);
-            log::error('error' . ' => ' . 'خطایی در ثبت پرداخت رخ داده است. لطفاً بعداً دوباره امتحان کنید.');
+            Log::error("setPayment failed for UUID: " . $uuid . " | Error: " . $e->getMessage());
+            Inovice::where(['uuid' => $uuid])->update(['response' => $e->getMessage()]);
         }
     }
 }

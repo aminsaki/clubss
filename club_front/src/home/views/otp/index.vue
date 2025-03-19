@@ -1,45 +1,30 @@
 <template>
-  <div class="flex  justify-center">
-    <div class="d-flex flex-column card col-md-5 p-2 " v-if="statusOtp === 'SUCCESSFUL'">
-      <table class="table table-striped  resultPaymets  " style="direction: rtl; ">
-        <thead>
-        <tr style="text-align: center" >
-          <th colspan="2"  >
-            <i class="fa fa-check-circle fs-1 text-green-600 "></i>
-            <h5 class="text-green-600 p-3">تراکنش با موفقیت انجام شده</h5>
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr v-if="ref_id">
-          <td class="p-3"><i class="fa fa-receipt text-rose-500  "></i> کد رهگیری</td>
-          <td class="p-3">{{ ref_id }}</td>
-        </tr>
-        <tr v-if="date ">
-          <td class="p-3"><i class="fa fa-calendar-alt text-rose-500 "></i> زمان </td>
-          <td class="p-3">{{ dates.converDatePersian(date) }}</td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md" v-else>
+  <div class="flex justify-center items-center min-h-screen">
+    <successful v-if="statusOtp === 'SUCCESSFUL'" ></successful>
+    <div  v-else class="bg-white shadow-lg rounded-lg p-6 w-full max-w-md">
       <h2 class="text-center text-2xl font-bold text-gray-800 mb-4">ورود با شماره تلفن</h2>
+      <p class="text-gray-600 text-center mb-3">برای اتمام خرید لطفا شماره تلفن خود را وارد کنید.</p>
       <div class="mb-4">
-        <label class="form-label text-gray-700 font-medium">شماره تلفن:<span class="text-sm text-danger">(لطفا به جا صفر از98+ استفاده کنید)</span> </label>
+        <label class="form-label text-gray-700 font-medium">شماره تلفن:</label>
         <input
           v-model="phoneNumber"
           type="tel"
           maxlength="13"
-          minlength="13"
-          placeholder="+98900428900"
-          :disabled="isCodeSent"
+          minlength="10"
+          placeholder="مثال: +989904289707"
+          :disabled="isCodeSent || loading"
           class="form-control px-3 py-2 rounded-lg border border-gray-300 focus:ring focus:ring-blue-300 transition w-full"
+          @input="formatPhoneNumber"
         />
+        <p v-if="phoneError" class="text-red-500 mt-1">فرمت شماره تلفن نامعتبر است. لطفاً از فرمت صحیح استفاده کنید (مثال: +989904289707).</p>
+        <p class="text-sm text-gray-500 mt-1">شماره تلفن شما به صورت خودکار به فرمت بین‌المللی تبدیل می‌شود (+98).</p>
         <button
           @click="sendVerificationCode"
           v-if="!isCodeSent"
           class="btn btn-primary w-full mt-3 py-2 rounded-lg"
+          :disabled="loading || phoneError"
         >
+          <span v-if="loading" class="spinner-border spinner-border-sm"></span>
           ارسال کد تأیید
         </button>
       </div>
@@ -54,116 +39,82 @@
         <button
           @click="verifyCode"
           class="btn btn-success w-full mt-3 py-2 rounded-lg"
+          :disabled="loading"
         >
+          <span v-if="loading" class="spinner-border spinner-border-sm"></span>
           تأیید کد
-        </button>
-        <button
-          @click="RestCode"
-          class="btn btn-outline-dark w-full mt-3 py-2 rounded-lg"
-        >
-          ریست کردن کد
         </button>
       </div>
     </div>
   </div>
+
 </template>
 
 <script setup>
-import { $ref } from 'unplugin-vue-macros/macros';
-import axios from "axios";
-let phoneNumber = $ref('');
-let verificationCode = $ref('');
-let isCodeSent = $ref(false);
-import {useRoute} from 'vue-router'
-import * as dates from "@/commons/helpers/DatePersian.js";
-import {data} from "autoprefixer";
-
-
-const route = useRoute()
-let status = $ref(route.params.params[0]);
-let ref_id = $ref((route.params.params[1]) ? route.params.params[1] : 0);
-let date = $ref((route.params.params[2]) ? route.params.params[2] : 0);
-let statusOtp =  $ref('false');
-function MethodState(status) {
-  if (status === "SUCCESSFUL") {
-    return "SUCCESSFUL";
-  }
-  return "UNKNOWN";
-}
+import { ref } from 'vue';
+import axios from 'axios';
+import Swal from 'sweetalert2';
+import Successful from "@/home/views/otp/successful.vue";
+const phoneNumber = ref('');
+const verificationCode = ref('');
+const isCodeSent = ref(false);
+const loading = ref(false);
+const phoneError = ref(false);
+const statusOtp = ref('PERSONAL');
 const customAxios = axios.create({
   baseURL: 'https://club.holoo.co.ir/',
-
 });
-
-function RestCode(){
-  isCodeSent =  false;
-}
-const sendVerificationCode = async () => {
-  if (!phoneNumber) {
-    alert('لطفاً شماره تلفن خود را وارد کنید.');
-    return;
-  }
-  const data = {
-    username: phoneNumber,
-    method: "signup",
-    country_code: "IR"
-  };
-  customAxios.post('api/iam/auth/otp', data, {
-    headers: {
-      'Accept': 'application/json',
-      'Accept-Language': 'en',
-      'Content-Type': 'application/json'
-    }
-  })
-    .then(response => {
-      console.log('Response:', response.data);
-      isCodeSent = true;
-    })
-    .catch(error => {
-      isCodeSent = false;
-      console.error('Error:', error);
-    });
-
-
+//
+const formatPhoneNumber = () => {
+  phoneNumber.value = phoneNumber.value.replace(/^0/, '+98');
+  phoneError.value = !/^\+98\d{10}$/.test(phoneNumber.value);
 };
-const verifyCode = async () => {
 
-  if (!verificationCode) {
-    alert('لطفاً کد تأیید را وارد کنید.');
+const sendVerificationCode = async () => {
+  if (!phoneNumber.value || phoneError.value) {
+    Swal.fire({ icon: 'error', title: 'خطا', text: 'شماره تلفن نامعتبر است. لطفاً فرمت صحیح را رعایت کنید.' });
     return;
   }
-  const data = {
-    username: phoneNumber,
-    method: "signup",
-    country_code: "IR",
-    otp_code: verificationCode,
-    user_type: "PERSONAL",
-  };
-  customAxios.post('api/iam/auth/register/otp', data, {
-    headers: {
-      'Accept': 'application/json',
-      'Accept-Language': 'en',
-      'Content-Type': 'application/json'
+  loading.value = true;
+  try {
+    await customAxios.post('api/iam/auth/otp', {
+      username: phoneNumber.value,
+      method: 'signup',
+      country_code: 'IR',
+    }, { headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' } });
+    isCodeSent.value = true;
+    Swal.fire({ icon: 'success', title: 'موفق!', text: 'کد تأیید ارسال شد.' });
+  } catch (error) {
+    Swal.fire({ icon: 'error', title: 'خطا', text: 'ارسال کد ناموفق بود. لطفا دوباره امتحان کنید.' });
+  } finally {
+    loading.value = false;
+  }
+};
+//
+const verifyCode = async () => {
+  if (!verificationCode.value) {
+    Swal.fire({ icon: 'error', title: 'خطا', text: 'لطفاً کد تأیید را وارد کنید.' });
+    return;
+  }
+  loading.value = true;
+  try {
+    const response = await customAxios.post('api/iam/auth/register/otp', {
+      username: phoneNumber.value,
+      method: 'signup',
+      country_code: 'IR',
+      otp_code: verificationCode.value,
+      user_type: 'PERSONAL',
+    }, { headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' } });
+    if (response.status === 201) {
+       statusOtp.value = 'SUCCESSFUL';
+    } else {
+      Swal.fire({ icon: 'error', title: 'خطا', text: 'کد تایید نامعتبر است.' });
     }
-  })
-    .then(response => {
-      if(response.status ===201) {
-        statusOtp ='SUCCESSFUL';
-        return true
-      }else{
-        console.log(response);
-      }
-    })
-    .catch(error => {
-      isCodeSent = false;
-      verificationCode ="";
-      alert("متاسفانه کد وارد شده اشتباه می باشد یک بار دیگه امحتان کنید.")
-      console.error('Error:', error);
-    });
+  } catch (error) {
+    Swal.fire({ icon: 'error', title: 'خطا', text: 'مشکلی در تایید کد به وجود آمد. لطفاً دوباره تلاش کنید.' });
+  } finally {
+    loading.value = false;
+  }
 };
 </script>
-<style scoped>
-input::placeholder{
-  text-align: right;
-}
-</style>
+
